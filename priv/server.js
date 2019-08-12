@@ -51,13 +51,12 @@ async function callModuleFunction(moduleFunction, args) {
 }
 
 async function getResponse(string) {
+  const [moduleFunction, args, uuid] = JSON.parse(string)
   try {
-    const [moduleFunction, args] = JSON.parse(string)
     const result = await callModuleFunction(moduleFunction, args)
-
-    return JSON.stringify([true, result])
+    return JSON.stringify([true, uuid, result])
   } catch ({ message, stack }) {
-    return JSON.stringify([false, `${message}\n${stack}`])
+    return JSON.stringify([false, uuid, `${message}\n${stack}`])
   }
 }
 

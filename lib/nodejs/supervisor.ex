@@ -30,11 +30,14 @@ defmodule NodeJS.Supervisor do
   end
 
   defp to_transaction(module, args, opts) do
-    timeout = Keyword.get(opts, :timeout, @timeout)
-
     func = fn pid ->
       try do
-        GenServer.call(pid, {module, args}, timeout)
+        GenServer.call(pid, {module, args, self()})
+
+        receive do
+          result ->
+            result
+        end
       catch
         :exit, {:timeout, {GenServer, :call, _}} ->
           {:error, "Call timed out."}
